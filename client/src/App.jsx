@@ -23,7 +23,6 @@ const TabsOfGrid = () => {
   const fileNames = useSelector(state => state.data.fileNames)
   const filtereData = useSelector(state => state.data.filteredData)
 
-  console.log(dataArray)
   const handleChange = (key) => {
     setKey(key)
     dispatch(SET_FILTERED_DATA([]))
@@ -44,7 +43,8 @@ const TabsOfGrid = () => {
             label: fileNames[i],
             key: i,
 
-            children: <>{filtereData.length > 0 && <Button style={{ float: 'right' }} onClick={() => dispatch(SET_FILTERED_DATA([]))}>clear filter</Button>} <Grid data={data} keyOfTab={key} /></>,
+            children: <>{filtereData.length > 0 && <Button style={{ float: 'right' }} onClick={() => dispatch(SET_FILTERED_DATA([]))}>clear filter</Button>} <div className='grid_container'>
+              <Grid data={data} keyOfTab={key} /></div></>,
           };
         })}
         onChange={handleChange}
