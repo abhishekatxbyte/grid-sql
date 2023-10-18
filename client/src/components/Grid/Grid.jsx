@@ -9,7 +9,7 @@ import React, { useState } from 'react';
 
 
 import { MenuUnfoldOutlined } from '@ant-design/icons'
-import { Button, Divider, Input, Popover, Table, Tooltip } from 'antd';
+import { Button, ConfigProvider, Divider, Input, Popover, Table, Tooltip } from 'antd';
 import { useSelector } from 'react-redux';
 import { EditableCell, Row } from './components/columns';
 import getColumnSearchProps from './components/getColumnSearchProps'
@@ -84,7 +84,7 @@ const Grid = ({ data, keyOfTab }) => {
                     <CustomTreeSelect dataIndex={key} setDataSource={setDataSource} />
                     <PinPopover dataIndex={key} />
                 </div>
-                <Divider />
+                <span className='custom-divider'></span>
                 <FilterbyuniqItem
                     key={key}
                     dataIndex={key}
@@ -150,11 +150,12 @@ const Grid = ({ data, keyOfTab }) => {
 
     });
     dynamicColumns.unshift({
-        title: 'Sort',
+        title: '',
         dataIndex: 'sort',
         key: 'sort',
         render: () => null,
-        width: 70,
+        width: 10,
+        maxWidth: 40,
         fixed: 'left',
     });
     dynamicColumns.pop()
@@ -215,27 +216,41 @@ const Grid = ({ data, keyOfTab }) => {
     console.log(dataSource)
     return (
         <div>
+            <ConfigProvider
+                theme={{
+                    components: {
+                        Table: {
+                            rowHoverBg: ' #e6f4ff'
 
-            <DndContext modifiers={[restrictToVerticalAxis]} onDragEnd={onDragEnd}>
-                <SortableContext
-                    items={dataSource.map((i) => i.key)}
-                    strategy={verticalListSortingStrategy}
-                >
-                    <Table
-                        components={{
-                            body: {
-                                row: Row,
-                                cell: EditableCell
-                            },
-                        }}
-                        scroll={scroll}
-                        rowKey="key"
-                        columns={columns}
-                        dataSource={dataSource}
-                        bordered={true}
-                    />
-                </SortableContext>
-            </DndContext>
+                            /* here is your component tokens */
+                        },
+                    },
+                }}
+            >
+                <DndContext modifiers={[restrictToVerticalAxis]} onDragEnd={onDragEnd}>
+                    <SortableContext
+                        items={dataSource.map((i) => i.key)}
+                        strategy={verticalListSortingStrategy}
+                    >
+                        <Table
+                            components={{
+                                body: {
+                                    row: Row,
+                                    cell: EditableCell
+                                },
+                            }}
+                            scroll={scroll}
+                            rowKey="key"
+                            size="middle"
+                            columns={columns}
+                            tableLayout='unset'
+                            dataSource={dataSource}
+                            bordered={true}
+                        />
+                    </SortableContext>
+                </DndContext>
+            </ConfigProvider>
+
         </div>
     );
 

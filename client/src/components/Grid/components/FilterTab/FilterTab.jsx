@@ -8,7 +8,7 @@ const FilterTab = ({ dataIndex }) => {
     return (
         <>
             <PinPopover dataIndex={dataIndex} />
-            <Divider size="small" />
+            <span className='custom-divider'></span>
         </>
     )
 }

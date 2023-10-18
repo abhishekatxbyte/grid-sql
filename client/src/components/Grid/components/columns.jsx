@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Form, Input } from 'antd';
 import { CSS } from '@dnd-kit/utilities';
-import { MenuOutlined } from '@ant-design/icons';
+import { HolderOutlined } from '@ant-design/icons';
 const EditableContext = React.createContext(null);
 import {
     useSortable,
@@ -38,19 +38,21 @@ export const Row = ({ children, ...props }) => {
     return (
         <Form form={form} component={false}>
 
-            <tr {...props} ref={setNodeRef} style={style} {...attributes}>
+            <tr {...props} ref={setNodeRef} style={style} {...attributes} className="dragIcon">
                 {React.Children.map(children, (child) => {
                     if (child.key === 'sort') {
                         return React.cloneElement(child, {
                             children: (
-                                <MenuOutlined
-                                    ref={setActivatorNodeRef}
-                                    style={{
-                                        touchAction: 'none',
-                                        cursor: 'move',
-                                    }}
-                                    {...listeners}
-                                />
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+
+                                    <HolderOutlined ref={setActivatorNodeRef}
+                                        style={{
+                                            fontSize: '1.6em',
+                                            touchAction: 'none',
+                                            cursor: 'move',
+                                        }}
+                                        {...listeners} />
+                                </div>
                             ),
                         });
                     } else {

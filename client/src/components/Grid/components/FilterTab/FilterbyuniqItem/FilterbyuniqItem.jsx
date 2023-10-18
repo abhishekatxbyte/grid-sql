@@ -145,7 +145,7 @@ const FilterbyuniqItem = ({ dataIndex, setDataSource }) => {
                     label: option.label,
                 }))}
             />
-            <Divider />
+            <span className='custom-divider'></span>
             <MyInput data={data} dataIndex={dataIndex} inputValue={inputValue} setInputValue={setInputValue} condition={condition} isnumber={isnumber} setDataSource={setDataSource} />
         </div>
     );
