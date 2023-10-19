@@ -1,7 +1,8 @@
 const { processCSV } = require('./csv.service');
+const multer = require('multer');
 
 async function csvUpload(req, res) {
-    console.log("REQ", req.file );
+  console.log("REQ", req.csvFile);
   try {
 
     const filePath = req.file.path;

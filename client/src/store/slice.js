@@ -1,5 +1,25 @@
-import { createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import axios from 'axios';
 
+export const uploadCsvFile = createAsyncThunk('data/uploadCsvFile', async (file) => {
+    // Create a FormData object to send the file
+    const formData = new FormData();
+    console.log(file)
+    formData.append(
+        "csvFile", file
+    );
+    console.log(formData)
+    try {
+        // Make a POST request to the API endpoint
+        const response = await axios.post('http://localhost:3000/api/csv/csvupload', formData);
+
+        // Return the response data
+        return response.data;
+    } catch (error) {
+        // Handle the error here
+        throw error;
+    }
+});
 const initialState = {
     data: [],
     dataArray: [],
@@ -43,6 +63,24 @@ export const slice = createSlice({
         SET_CURRENT_FILE_INDEX(state, action) {
             state.setCurrentFileIndex = action.payload
         }
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(uploadCsvFile.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(uploadCsvFile.fulfilled, (state, action) => {
+                const data = JSON.parse(action.payload)
+                console.log(data)
+                state.loading = false;
+                state.outputData = data;
+                state.multipleData = [...state.multipleData, data]
+            })
+            .addCase(uploadCsvFile.rejected, (state, action) => {
+                state.loading = false;
+                console.log(action.error.message)
+            })
     },
 })
 
