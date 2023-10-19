@@ -1,17 +1,33 @@
-const { processCSV } = require('./csv.service');
+const { processCSV } = require("./csv.service");
+const fs = require("fs");
+const { v4: uuidv4 } = require("uuid");
 
 async function csvUpload(req, res) {
-    console.log("REQ", req.file );
   try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No file uploaded." });
+    }
+    console.log("req.file", req.file);
+    const uniqueIdentifier = uuidv4();
+    const originalFileName = req.file.originalname;
+    const fileExtension = originalFileName.split(".").pop();
 
-    const filePath = req.file.path;
+    const newPath = `uploads/${uniqueIdentifier}.${fileExtension}`;
 
-    const jsonData = await processCSV(filePath);
+    fs.renameSync(req.file.path, newPath);
 
-    res.status(200).json({ data: jsonData });
+    const jsonData = await processCSV(newPath);
+
+    if (jsonData && jsonData.length > 0) {
+      res.status(200).json({ data: jsonData });
+    } else {
+      res.status(400).json({ error: "No data found in the file." });
+    }
   } catch (error) {
-
-    res.status(500).json({ error: 'An error occurred while processing the CSV.' });
+    console.error("Error processing the file:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while processing the file." });
   }
 }
 
