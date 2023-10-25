@@ -1,0 +1,55 @@
+.container {
+    width: 100%;
+    align-items: center;
+    max-width: 1200px;
+    
+    margin: auto auto;
+    background-color: #fff;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    border-radius: 10px;
+    user-select: none;
+}
+
+
+
+.form {
+    width: 100%;
+    padding: 20px;
+    border-radius: 10px;
+
+    background-color: #f1f8ff;
+}
+
+.image_container {
+    width: 50%;
+}
+
+.authImage {
+    width: 100%;
+}
+
+
+
+.inputField {
+    width: 100%;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+
+/* footer */
+.footer_container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1em;
+    border-top: 2px solid #eee;
+    padding: 20px
+}
+
+.footer_container img {
+    width: 50px;
+}
