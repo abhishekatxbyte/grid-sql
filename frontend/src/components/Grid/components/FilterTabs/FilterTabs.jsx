@@ -62,12 +62,21 @@ const FilterTabs = ({ dataIndex, setDataSource }) => {
   ];
   return (
     <div className="flex items-center justify-center flex max-w-[200px] overflow-auto">
-      <Tabs
+      {/* <Tabs
         className="flex items-center justify-center"
         defaultActiveKey="1"
         items={items}
         onChange={onChange}
-      />
+      /> */}
+      <div className="flex flex-col gap-2 max-w-[200px] overflow-auto">
+        <PinPopover dataIndex={dataIndex} />
+        <FilterbyuniqItem
+          key={dataIndex}
+          dataIndex={dataIndex}
+          setDataSource={setDataSource}
+        />
+        <CustomTreeSelect dataIndex={dataIndex} setDataSource={setDataSource} />
+      </div>
     </div>
   );
 };

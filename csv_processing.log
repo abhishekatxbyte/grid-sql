@@ -1,8 +1,20 @@
-2023-10-26 14:27:53,406 - root - ERROR - Unsupported file format: 
-2023-10-26 14:40:47,508 - root - ERROR - File not found: 
-2023-10-26 14:41:22,176 - root - ERROR - File not found: 
-2023-10-26 14:41:33,758 - root - ERROR - File not found: 
-2023-10-26 14:44:27,675 - root - ERROR - Unsupported file format: /home/xbyte/Desktop/GRID/grid-mongo/backend/controllers/testpy.py
-2023-10-26 14:44:29,574 - root - ERROR - Unsupported file format: /home/xbyte/Desktop/GRID/grid-mongo/backend/controllers/testpy.py
-2023-10-26 14:44:30,346 - root - ERROR - Unsupported file format: /home/xbyte/Desktop/GRID/grid-mongo/backend/controllers/testpy.py
-2023-10-26 14:44:34,768 - root - ERROR - Unsupported file format: /home/xbyte/Desktop/GRID/grid-mongo/backend/controllers/testpy.py
+2023-10-26 15:33:36,745 - root - INFO - Received input file: /home/xbyte/Desktop/GRID/grid-mongo/backend/temp/001.csv
+2023-10-26 15:33:36,745 - root - ERROR - File not found: /home/xbyte/Desktop/GRID/grid-mongo/backend/temp/001.csv
+2023-10-26 15:34:10,960 - root - INFO - Received input file: /home/xbyte/Desktop/GRID/grid-mongo/backend/temp/001.csv
+2023-10-26 15:35:19,354 - root - INFO - Processed /home/xbyte/Desktop/GRID/grid-mongo/backend/temp/001.csv as CSV
+2023-10-26 15:56:43,753 - root - INFO - Received input file: /home/xbyte/Desktop/GRID/grid-mongo/backend/temp/003.csv
+2023-10-26 15:59:24,063 - root - INFO - Processed /home/xbyte/Desktop/GRID/grid-mongo/backend/temp/003.csv as CSV
+2023-10-26 16:15:36,802 - root - INFO - Received input file: /home/xbyte/Desktop/GRID/grid-mongo/backend/temp/003.csv
+2023-10-26 16:18:09,394 - root - INFO - Processed /home/xbyte/Desktop/GRID/grid-mongo/backend/temp/003.csv as CSV
+2023-10-26 16:20:09,576 - root - INFO - Received input file: /home/xbyte/Desktop/GRID/grid-mongo/backend/temp/result1.xlsx
+2023-10-26 16:20:09,706 - root - INFO - Processed /home/xbyte/Desktop/GRID/grid-mongo/backend/temp/result1.xlsx as Excel
+2023-10-26 16:21:02,317 - root - INFO - Received input file: /home/xbyte/Desktop/GRID/grid-mongo/backend/temp/result1.xlsx
+2023-10-26 16:21:02,403 - root - INFO - Processed /home/xbyte/Desktop/GRID/grid-mongo/backend/temp/result1.xlsx as Excel
+2023-10-26 16:36:10,876 - root - INFO - Received input file: /home/xbyte/Desktop/GRID/grid-mongo/backend/temp/result1.xlsx
+2023-10-26 16:36:10,960 - root - INFO - Processed /home/xbyte/Desktop/GRID/grid-mongo/backend/temp/result1.xlsx as Excel
+2023-10-26 16:37:22,958 - root - INFO - Received input file: /home/xbyte/Desktop/GRID/grid-mongo/backend/temp/result1.xlsx
+2023-10-26 16:37:23,043 - root - INFO - Processed /home/xbyte/Desktop/GRID/grid-mongo/backend/temp/result1.xlsx as Excel
+2023-10-26 16:38:59,020 - root - INFO - Received input file: /home/xbyte/Desktop/GRID/grid-mongo/backend/temp/result1.xlsx
+2023-10-26 16:38:59,105 - root - INFO - Processed /home/xbyte/Desktop/GRID/grid-mongo/backend/temp/result1.xlsx as Excel
+2023-10-26 16:39:55,318 - root - INFO - Received input file: /home/xbyte/Desktop/GRID/grid-mongo/backend/temp/result1.xlsx
+2023-10-26 16:39:55,403 - root - INFO - Processed /home/xbyte/Desktop/GRID/grid-mongo/backend/temp/result1.xlsx as Excel
