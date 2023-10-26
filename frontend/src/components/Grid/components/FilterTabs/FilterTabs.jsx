@@ -30,19 +30,6 @@ const FilterTabs = ({ dataIndex, setDataSource }) => {
       children: (
         <div className="flex flex-col gap-2 max-w-[200px] overflow-auto">
           <PinPopover dataIndex={dataIndex} />
-
-          <CustomTreeSelect
-            dataIndex={dataIndex}
-            setDataSource={setDataSource}
-          />
-        </div>
-      ),
-    },
-    {
-      key: "2",
-      label: "Tab 2",
-      children: (
-        <div className="flex flex-col gap-2">
           <FilterbyuniqItem
             key={dataIndex}
             dataIndex={dataIndex}
@@ -55,11 +42,23 @@ const FilterTabs = ({ dataIndex, setDataSource }) => {
         </div>
       ),
     },
-    {
-      key: "3",
-      label: "Tab 3",
-      children: "Content of Tab Pane 3",
-    },
+    // {
+    //   key: "2",
+    //   label: "Tab 2",
+    //   children: (
+    //     <div className="flex flex-col gap-2">
+    //       <FilterbyuniqItem
+    //         key={dataIndex}
+    //         dataIndex={dataIndex}
+    //         setDataSource={setDataSource}
+    //       />
+    //       <CustomTreeSelect
+    //         dataIndex={dataIndex}
+    //         setDataSource={setDataSource}
+    //       />
+    //     </div>
+    //   ),
+    // },
   ];
   return (
     <div className="flex items-center justify-center flex max-w-[200px] overflow-auto">

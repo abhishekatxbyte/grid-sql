@@ -1,0 +1,15 @@
+.ant-tree-treenode.ant-tree-treenode-switcher-close.ant-tree-treenode-leaf-last{
+    margin-left: -31px !important;
+}
+.ant-tree-treenode.ant-tree-treenode-switcher-open.ant-tree-treenode-leaf-last{
+    /* margin-left: -24px !important; */
+}
+.ant-tree-switcher.ant-tree-switcher_open{
+    display: none;
+}
+.ant-tree-treenode.ant-tree-treenode-switcher-open.ant-tree-treenode-leaf-last {
+    margin-left: 17px !important;
+}.ant-tree-treenode.ant-tree-treenode-switcher-close{
+    margin-left: -31px !important;
+
+}

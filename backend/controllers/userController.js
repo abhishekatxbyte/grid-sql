@@ -15,7 +15,7 @@ const authUser = asyncHandler(async (req, res, next) => {
 
   const user = await User.findOne({ email });
 
-  if (user && await user.matchPassword(password)) {
+  if (user && (await user.matchPassword(password))) {
     generateToken(res, user._id);
     res.status(200).json({
       _id: user._id,
@@ -91,7 +91,7 @@ const getUserProfile = asyncHandler(async (req, res, next) => {
 // @access  Private
 const updateUserProfile = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user._id);
-  console.log(user)
+  console.log(user);
   if (user) {
     user.name = req.body.name || user.name;
     user.email = req.body.email || user.email;

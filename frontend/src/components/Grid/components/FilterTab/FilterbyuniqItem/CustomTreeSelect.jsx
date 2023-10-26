@@ -209,6 +209,7 @@
 import React, { useState } from "react";
 import { Tree, Input } from "antd";
 import { useSelector } from "react-redux";
+import "./style.css";
 
 const { Search } = Input;
 
@@ -324,7 +325,7 @@ const CustomTree = ({ dataIndex, setDataSource }) => {
       <div className=" overflow-auto">
         <Tree
           checkable
-          onExpand={onExpand}
+          // onExpand={true}
           className="max-h-[200px] max-w-2"
           expandedKeys={expandedKeys}
           autoExpandParent={false}
