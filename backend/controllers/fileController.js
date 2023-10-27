@@ -2,6 +2,8 @@ import asyncHandler from "express-async-handler";
 import { spawn } from "child_process";
 import path from "path";
 import fs from "fs";
+import rimraf from "rimraf"; // Import the rimraf library
+import connectDB from "../config/db.js";
 
 const uploadFile = asyncHandler(async (req, res) => {
   if (!req.files || !req.files.file) {
@@ -28,6 +30,11 @@ const uploadFile = asyncHandler(async (req, res) => {
       }
 
       const pythonProcess = spawn("python3", [pythonScriptPath, tempFilePath]);
+      let pythonOutput = ""; // To capture the output from the Python script
+
+      pythonProcess.stdout.on("data", (data) => {
+        pythonOutput += data.toString();
+      });
 
       pythonProcess.on("error", (error) => {
         return res
@@ -35,37 +42,67 @@ const uploadFile = asyncHandler(async (req, res) => {
           .json({ error: "Python script execution failed" });
       });
 
-      const jsonData = [];
-
-      // Listen for data events and collect the output in chunks
-      pythonProcess.stdout.on("data", (data) => {
-        // Process the data as it arrives
-        const lines = data.toString().split("\n");
-        lines.forEach((line) => {
-          if (line.trim() !== "") {
-            try {
-              const parsedData = JSON.parse(line);
-              jsonData.push(parsedData);
-            } catch (error) {
-              console.error("Error parsing JSON:", error);
-            }
-          }
-        });
-      });
       pythonProcess.on("close", (code) => {
         if (code === 0) {
-          return res.json({ data: jsonData });
+          // Processing completed successfully
+          // Remove the temporary directory forcefully
+          rimraf(tempDir, () => {
+            // Recreate the temporary directory
+            fs.mkdirSync(tempDir);
+
+            // Extract the unique identifier from the python output
+            const match = /"unique_identifier": "([a-f0-9]+)"/.exec(
+              pythonOutput
+            );
+            const uniqueIdentifier = match ? match[1] : null;
+
+            return res.json({
+              message: "File uploaded and processed successfully",
+              pythonOutput: uniqueIdentifier, // Include only the unique identifier in the response
+            });
+          });
         } else {
+          // Python script execution failed
           return res
             .status(500)
             .json({ error: "Python script execution failed" });
         }
       });
     } else {
+      // Remove the temporary file, as it's an unsupported format
       fs.unlinkSync(tempFilePath);
       return res.status(400).json({ error: "Unsupported file format" });
     }
   });
 });
 
-export { uploadFile };
+async function getData(req, res) {
+  let client; // Define the client variable
+
+  try {
+    // Extract the query parameter from the request
+    const uniqueIdentifier = req.query.unique_identifier;
+
+    // Establish a connection to the MongoDB database using connectDB
+    const dbConnection = await connectDB();
+    client = dbConnection.connection.client; // Assign the client
+
+    const db = client.db("grid"); // Access the database name
+    const collection = db.collection("gridData");
+
+    // Construct the query to find documents with the specified unique_identifier
+    const query = { unique_identifier: uniqueIdentifier };
+
+    // Fetch all documents that match the query
+    const result = await collection.find(query).toArray();
+
+    // No need to close the client here
+
+    res.json(result);
+  } catch (error) {
+    console.log("Error: " + error);
+    res.status(500).json({ error: "Database error" });
+  }
+}
+
+export { getData, uploadFile };
