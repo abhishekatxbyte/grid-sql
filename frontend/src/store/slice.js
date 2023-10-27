@@ -1,90 +1,103 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
-import axios from 'axios';
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+// import axios from "axios";
 
-export const uploadCsvFile = createAsyncThunk('data/uploadCsvFile', async (file) => {
-    // Create a FormData object to send the file
-    const formData = new FormData();
-    console.log(file)
-    formData.append(
-        "csvFile", file
-    );
-    console.log(formData)
-    try {
-        // Make a POST request to the API endpoint
-        const response = await axios.post('http://localhost:3000/api/csv/csvupload', formData);
+// export const uploadCsvFile = createAsyncThunk(
+//   "data/uploadCsvFile",
+//   async (file) => {
+//     // Create a FormData object to send the file
+//     const formData = new FormData();
+//     formData.append("csvFile", file);
+//     console.log(formData);
+//     try {
+//       // Make a POST request to the API endpoint
+//       const response = await axios.post(
+//         "http://localhost:3000/api/csv/csvupload",
+//         formData
+//       );
 
-        // Return the response data
-        return response.data;
-    } catch (error) {
-        // Handle the error here
-        throw error;
-    }
-});
+//       // Return the response data
+//       return response.data;
+//     } catch (error) {
+//       // Handle the error here
+//       throw error;
+//     }
+//   }
+// );
 const initialState = {
-    data: [],
-    dataArray: [],
-    headers: [],
-    leftPinnedColumns: [],
-    setCurrentFileIndex: 0,
-    rightPinnedColumns: [],
-    csvData: null,
-    filteredData: [],
-    fileNames: []
-}
+  data: [],
+  dataArray: [],
+  headers: [],
+  leftPinnedColumns: [],
+  setCurrentFileIndex: 0,
+  rightPinnedColumns: [],
+  csvData: null,
+  filteredData: [],
+  fileNames: [],
+};
 
 export const slice = createSlice({
-    name: 'data',
-    initialState,
-    reducers: {
-        SET_DATA: (state, action) => {
-            state.data = action.payload
-        },
-        SET_MULTIPLE_DATA: (state, action) => {
-            state.dataArray = [...state.dataArray, action.payload]
-        },
-        SET_FILE_NAME: (state, action) => {
-            state.fileNames = [...state.fileNames, action.payload]
-        },
-        SET_HEADERS(state, action) {
-            state.headers = action.payload
-        },
-        SET_CSV_DATA(state, action) {
-            state.csvData = action.payload
-        },
-        SET_FILTERED_DATA(state, action) {
-            state.filteredData = action.payload
-        },
-        SET_LEFT_PINNED_COLUMNS(state, action) {
-            state.leftPinnedColumns = action.payload
-        },
-        SET_RIGHT_PINNED_COLUMNS(state, action) {
-            state.rightPinnedColumns = action.payload
-        },
-        SET_CURRENT_FILE_INDEX(state, action) {
-            state.setCurrentFileIndex = action.payload
-        }
+  name: "data",
+  initialState,
+  reducers: {
+    SET_DATA: (state, action) => {
+      state.data = action.payload;
     },
-    extraReducers: (builder) => {
-        builder
-            .addCase(uploadCsvFile.pending, (state) => {
-                state.loading = true;
-                state.error = null;
-            })
-            .addCase(uploadCsvFile.fulfilled, (state, action) => {
-                const data = JSON.parse(action.payload)
-                console.log(data)
-                state.loading = false;
-                state.outputData = data;
-                state.multipleData = [...state.multipleData, data]
-            })
-            .addCase(uploadCsvFile.rejected, (state, action) => {
-                state.loading = false;
-                console.log(action.error.message)
-            })
+    SET_MULTIPLE_DATA: (state, action) => {
+      state.dataArray = [...state.dataArray, action.payload];
     },
-})
+    SET_FILE_NAME: (state, action) => {
+      state.fileNames = [...state.fileNames, action.payload];
+    },
+    SET_HEADERS(state, action) {
+      state.headers = action.payload;
+    },
+    SET_CSV_DATA(state, action) {
+      state.csvData = action.payload;
+    },
+    SET_FILTERED_DATA(state, action) {
+      state.filteredData = action.payload;
+    },
+    SET_LEFT_PINNED_COLUMNS(state, action) {
+      state.leftPinnedColumns = action.payload;
+    },
+    SET_RIGHT_PINNED_COLUMNS(state, action) {
+      state.rightPinnedColumns = action.payload;
+    },
+    SET_CURRENT_FILE_INDEX(state, action) {
+      state.setCurrentFileIndex = action.payload;
+    },
+  },
+  extraReducers: (builder) => {
+    builder;
+    //   .addCase(uploadCsvFile.pending, (state) => {
+    //     state.loading = true;
+    //     state.error = null;
+    //   })
+    //   .addCase(uploadCsvFile.fulfilled, (state, action) => {
+    //     const data = JSON.parse(action.payload);
+    //     console.log(data);
+    //     state.loading = false;
+    //     state.outputData = data;
+    //     state.multipleData = [...state.multipleData, data];
+    //   })
+    //   .addCase(uploadCsvFile.rejected, (state, action) => {
+    //     state.loading = false;
+    //     console.log(action.error.message);
+    //   });
+  },
+});
 
 // Action creators are generated for each case reducer function
-export const { SET_DATA, SET_MULTIPLE_DATA, SET_FILE_NAME, SET_HEADERS, SET_FILTERED_DATA, SET_LEFT_PINNED_COLUMNS, SET_RIGHT_PINNED_COLUMNS, SET_CURRENT_FILE_INDEX, SET_CSV_DATA } = slice.actions
+export const {
+  SET_DATA,
+  SET_MULTIPLE_DATA,
+  SET_FILE_NAME,
+  SET_HEADERS,
+  SET_FILTERED_DATA,
+  SET_LEFT_PINNED_COLUMNS,
+  SET_RIGHT_PINNED_COLUMNS,
+  SET_CURRENT_FILE_INDEX,
+  SET_CSV_DATA,
+} = slice.actions;
 
-export default slice.reducer
+export default slice.reducer;

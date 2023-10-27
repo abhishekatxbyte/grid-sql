@@ -5,7 +5,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { MenuUnfoldOutlined } from "@ant-design/icons";
 import { ConfigProvider, Input, Popover, Table, Tooltip } from "antd";
@@ -13,6 +13,7 @@ import { useSelector } from "react-redux";
 import { EditableCell, Row } from "./components/columns";
 
 import FilterTabs from "./components/FilterTabs/FilterTabs";
+import axios from "axios";
 function filterArrayByProperty(data, propertyName, inputValue) {
   if (!data || !Array.isArray(data)) {
     return [];
@@ -58,7 +59,26 @@ const InputComponent = ({ column, setDataSource }) => {
 };
 
 const Grid = ({ data, keyOfTab }) => {
-  console.log(keyOfTab);
+  const [state, setstate] = useState([]);
+  const [loading, setloading] = useState(true);
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const getData = async () => {
+    await axios
+      .get("https://jsonplaceholder.typicode.com/comments")
+      .then((res) => {
+        setloading(false);
+        setstate(
+          res.data.map((row) => ({
+            Name: row.name,
+            Email: row.email,
+            id: row.id,
+          }))
+        );
+      });
+  };
   const [dataSource, setDataSource] = useState(data);
   const leftPinnedColumns = useSelector(
     (state) => state.data.leftPinnedColumns
@@ -240,6 +260,7 @@ const Grid = ({ data, keyOfTab }) => {
                 },
               }}
               scroll={scroll}
+              loading={loading}
               rowKey="key"
               size="middle"
               columns={columns}

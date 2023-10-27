@@ -3,7 +3,7 @@ import { Button, Tabs } from "antd";
 
 import File from "./../File";
 import { useDispatch, useSelector } from "react-redux";
-import Grid from "./../Grid/Grid";
+import Grid from "./../Grid/GridWithApi";
 import {
   SET_CURRENT_FILE_INDEX,
   SET_DATA,
