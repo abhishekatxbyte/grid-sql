@@ -75,6 +75,35 @@ const uploadFile = asyncHandler(async (req, res) => {
     }
   });
 });
+//using params
+// async function getData(req, res) {
+//   let client; // Define the client variable
+
+//   try {
+//     // Extract the query parameter from the request
+//     const uniqueIdentifier = req.query.unique_identifier;
+
+//     // Establish a connection to the MongoDB database using connectDB
+//     const dbConnection = await connectDB();
+//     client = dbConnection.connection.client; // Assign the client
+
+//     const db = client.db("grid"); // Access the database name
+//     const collection = db.collection("gridData");
+
+//     // Construct the query to find documents with the specified unique_identifier
+//     const query = { unique_identifier: uniqueIdentifier };
+
+//     // Fetch all documents that match the query
+//     const result = await collection.find(query).toArray();
+
+//     // No need to close the client here
+
+//     res.json(result);
+//   } catch (error) {
+//     console.log("Error: " + error);
+//     res.status(500).json({ error: "Database error" });
+//   }
+// }
 
 async function getData(req, res) {
   let client; // Define the client variable
