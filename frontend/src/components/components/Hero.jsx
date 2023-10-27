@@ -1,9 +1,6 @@
 import { useSelector } from "react-redux";
 import GridScreen from "./../screens/GridScreen.jsx";
-import { Container, Card, Button } from "react-bootstrap";
-import { LinkContainer } from "react-router-bootstrap";
 import "./style.css";
-import CSVReader from "./../Demo";
 
 const Hero = () => {
   const { userInfo } = useSelector((state) => state.auth);

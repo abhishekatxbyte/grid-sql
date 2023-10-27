@@ -141,6 +141,10 @@ const RegisterScreen = () => {
     try {
       const res = await register({ name, email, password }).unwrap();
       dispatch(setCredentials({ ...res }));
+      toast.success("Sign up Successfully", {
+        position: "top-right",
+        autoClose: 3000,
+      });
       navigate("/dashboard");
     } catch (error) {
       toast.error(error?.data?.message || "Invalid login");

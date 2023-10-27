@@ -4,22 +4,20 @@ import { useDispatch, useSelector } from "react-redux";
 
 import {
   SET_MULTIPLE_DATA,
-  SET_HEADERS,
   SET_DATA,
-  SET_FILTERED_DATA,
   SET_FILE_NAME,
   SET_CSV_DATA,
 } from "../store/slice";
 // import ModalHeader from './ModalHeader';
 
 const File = () => {
-  const dataArray = useSelector((state) => state.data.dataArray);
   const inputRef = useRef();
   const dispatch = useDispatch();
   const handleFile = async (e) => {
     const files = e.target.files;
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
+      console.log("file:", file.name);
       const data = await file.arrayBuffer();
       const workbook = XLSX.read(data);
       const worksheet = workbook.Sheets[workbook.SheetNames[0]];
