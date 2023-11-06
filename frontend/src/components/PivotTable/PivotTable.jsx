@@ -7,7 +7,7 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 
 function PivotTable() {
-  const data = useSelector((state) => state.fileUpload.receivedData);
+  const data = useSelector((state) => state.fileUpload.dataSource);
   if (!data) {
     return <>Please Upload File</>;
   }

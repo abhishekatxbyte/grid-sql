@@ -16,24 +16,6 @@ export const slice = createSlice({
   name: "data",
   initialState,
   reducers: {
-    SET_DATA: (state, action) => {
-      state.data = action.payload;
-    },
-    SET_MULTIPLE_DATA: (state, action) => {
-      state.dataArray = [...state.dataArray, action.payload];
-    },
-    SET_FILE_NAME: (state, action) => {
-      state.fileNames = [...state.fileNames, action.payload];
-    },
-    SET_HEADERS(state, action) {
-      state.headers = action.payload;
-    },
-    SET_CSV_DATA(state, action) {
-      state.csvData = action.payload;
-    },
-    SET_FILTERED_DATA(state, action) {
-      state.filteredData = action.payload;
-    },
     SET_LEFT_PINNED_COLUMNS(state, action) {
       state.leftPinnedColumns = action.payload;
     },
@@ -43,24 +25,6 @@ export const slice = createSlice({
     SET_CURRENT_FILE_INDEX(state, action) {
       state.setCurrentFileIndex = action.payload;
     },
-  },
-  extraReducers: (builder) => {
-    builder;
-    //   .addCase(uploadCsvFile.pending, (state) => {
-    //     state.loading = true;
-    //     state.error = null;
-    //   })
-    //   .addCase(uploadCsvFile.fulfilled, (state, action) => {
-    //     const data = JSON.parse(action.payload);
-    //     console.log(data);
-    //     state.loading = false;
-    //     state.outputData = data;
-    //     state.multipleData = [...state.multipleData, data];
-    //   })
-    //   .addCase(uploadCsvFile.rejected, (state, action) => {
-    //     state.loading = false;
-    //     console.log(action.error.message);
-    //   });
   },
 });
 

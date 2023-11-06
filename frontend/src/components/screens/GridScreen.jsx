@@ -120,7 +120,7 @@
 // };
 
 // function GridScreen() {
-//   const dataArray = useSelector((state) => state.fileUpload.receivedData);
+//   const dataArray = useSelector((state) => state.fileUpload.dataSource);
 //   const data = useSelector((state) => state.data.data);
 //   const [key, setKey] = useState("1");
 //   const handleChange = (key) => {

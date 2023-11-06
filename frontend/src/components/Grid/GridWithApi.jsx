@@ -14,40 +14,81 @@ import { EditableCell, Row } from "./components/columns";
 
 import FilterTabs from "./components/FilterTabs/FilterTabs";
 import axios from "axios";
-import { setData } from "../../store/fileUploadSlice";
-import { SET_DATA } from "../../store/slice";
+import {
+  data_source,
+  filter_field,
+  filter_values,
+  loading_state,
+  search_field,
+  search_value,
+  selected_limit,
+  selected_page,
+  setDataSource,
+  setLoading,
+  setSearchField,
+  setSearchValue,
+  setSelectedLimit,
+  setSelectedPage,
+  setSortDirection,
+  setSortField,
+  setTotalPage,
+  sort_direction,
+  sort_field,
+  total_pages,
+  unique_identifier,
+} from "../../store/fileUploadSlice";
 // import { fetchData, setPage } from "../../store/fileUploadSlice";
-function filterArrayByProperty(data, propertyName, inputValue) {
-  if (!data || !Array.isArray(data)) {
-    return [];
-  }
-  const regex = new RegExp(inputValue, "i");
-  return data.filter((item) => {
-    const propertyValue = String(item[propertyName]);
-    if (typeof propertyValue == "number") {
-      // Convert the input value to a number and check for equality
-      const numericInputValue = parseFloat(inputValue);
-      return propertyValue === numericInputValue;
-    } else if (typeof propertyValue === "string") {
-      // Check if the property value contains the input value
-      return regex.test(propertyValue);
-    }
-    return item;
-  });
-}
 
-const InputComponent = ({ column, setDataSource }) => {
-  const data = useSelector((state) => state.data.data);
+const fetchData = async () => {
+  const uniqueIdentifier = useSelector(unique_identifier);
+  const selectedPage = useSelector(selected_page);
+  const selectedLimit = useSelector(selected_limit);
+  const sortDirection = useSelector(sort_direction);
+  const sortField = useSelector(sort_field);
+  const searchField = useSelector(search_field);
+  const searchValue = useSelector(search_value);
+  const filterField = useSelector(filter_field);
+  const filterValues = useSelector(filter_values);
+  dispatch(setLoading(true));
+  try {
+    const params = {
+      unique_identifier: uniqueIdentifier,
+      page: selectedPage,
+      limit: selectedLimit,
+      sortField: sortField,
+      sort: sortDirection,
+      searchField: searchField,
+      searchValue: searchValue,
+      filterField: filterField,
+      filterValues: filterValues,
+    };
+
+    const queryString = Object.entries(params)
+      .filter(([key, value]) => value !== undefined)
+      .map(([key, value]) => `${key}=${value}`)
+      .join("&");
+
+    const url = `http://192.168.2.194:3000/api/file_upload?${queryString}`;
+
+    const getResponse = await axios.get(url);
+    console.log(getResponse.data);
+    dispatch(setDataSource(getResponse.data.data));
+    dispatch(setTotalPage(getResponse.data.totalPages));
+    dispatch(setLoading(false));
+    return getResponse;
+  } catch (error) {
+    throw error;
+  }
+};
+
+const InputComponent = ({ column }) => {
   const [inputValue, setInputValue] = useState("");
 
   const handleInputChange = (e) => {
     const inputValue = e.target.value;
     setInputValue(inputValue);
-    // Filter the data based on the 'column' property and inputValue
-    const filteredData = filterArrayByProperty(data, column, inputValue);
-    if (filteredData.length > 0) {
-      setDataSource(filteredData);
-    }
+    dispatch(setSearchField(column));
+    dispatch(setSearchValue(inputValue));
   };
   return (
     <div>
@@ -60,43 +101,59 @@ const InputComponent = ({ column, setDataSource }) => {
     </div>
   );
 };
-
 const Grid = () => {
-  const unique_identifier = useSelector(
-    (state) => state.fileUpload.uniqueIdentifier
-  );
-  const data = useSelector((state) => state.fileUpload.receivedData);
-  const [totalPage, setTotalPage] = useState(10);
-  const [dataSource, setDataSource] = useState(data);
-  const [loading, setLoading] = useState(false);
-  const [selectedPage, setSelectedPage] = useState(1);
-  const [selectedLimit, setSelectedLimit] = useState(10);
-  const [sort, setSort] = useState({
-    sortDirection: "desc",
-    sortField: null,
-  });
-  const dispatch = useDispatch();
+  const uniqueIdentifier = useSelector(unique_identifier);
+  const dataSource = useSelector(data_source);
+  const selectedPage = useSelector(selected_page);
+  const selectedLimit = useSelector(selected_limit);
+  const sortDirection = useSelector(sort_direction);
+  const sortField = useSelector(sort_field);
+  const searchField = useSelector(search_field);
+  const searchValue = useSelector(search_value);
+  const filterField = useSelector(filter_field);
+  const filterValues = useSelector(filter_values);
+  const loading = useSelector(loading_state);
+  const totalPages = useSelector(total_pages);
   const fetchData = async () => {
-    setLoading((prev) => !prev);
+    dispatch(setLoading(true));
     try {
-      const getResponse = await axios.get(
-        `http://192.168.2.194:3000/api/file_upload?unique_identifier=${unique_identifier}&page=${selectedPage}&limit=${selectedLimit}&sortField=${sort.sortField}&sort=${sort.sortDirection}`
-      );
-      setDataSource(getResponse.data.data);
-      dispatch(SET_DATA(getResponse.data.data));
-      setTotalPage(getResponse.data.totalPages);
-      setLoading(false);
+      const params = {
+        unique_identifier: uniqueIdentifier,
+        page: selectedPage,
+        limit: selectedLimit,
+        sortField: sortField,
+        sort: sortDirection,
+        searchField: searchField,
+        searchValue: searchValue,
+        filterField: filterField,
+        filterValues: filterValues,
+      };
 
+      const queryString = Object.entries(params)
+        .filter(([key, value]) => value !== undefined)
+        .map(([key, value]) => `${key}=${value}`)
+        .join("&");
+
+      const url = `http://192.168.2.194:3000/api/file_upload?${queryString}`;
+
+      const getResponse = await axios.get(url);
+      console.log(getResponse.data);
+      dispatch(setDataSource(getResponse.data.data));
+      dispatch(setTotalPage(getResponse.data.totalPages));
+      dispatch(setLoading(false));
       return getResponse;
     } catch (error) {
       throw error;
     }
   };
+
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    if (unique_identifier) {
+    if (uniqueIdentifier) {
       fetchData();
     }
-  }, [unique_identifier, selectedPage, selectedLimit, sort]);
+  }, [uniqueIdentifier, selectedPage, selectedLimit, sortDirection, sortField]);
 
   const leftPinnedColumns = useSelector(
     (state) => state.data.leftPinnedColumns
@@ -110,72 +167,78 @@ const Grid = () => {
   if (!dataSource) {
     return <>nothing to show</>;
   }
+  const dynamicColumns =
+    dataSource.length > 0
+      ? Object.keys(dataSource[0]).map((key) => {
+          let fixedValue = null;
 
-  const dynamicColumns = Object.keys(dataSource[0]).map((key) => {
-    let fixedValue = null;
-
-    const handleSortClick = async (key) => {
-      if (sort.sortDirection == "asc") {
-        setSort({ sortDirection: "desc", sortField: key });
-      } else {
-        setSort({ sortDirection: "asc", sortField: key });
-      }
-    };
-    console.log(sort);
-    if (leftPinnedColumns.includes(key)) {
-      fixedValue = "left";
-    } else if (rightPinnedColumns.includes(key)) {
-      fixedValue = "right";
-    } else {
-      fixedValue = "null";
-    }
-    return {
-      fixed: fixedValue,
-      dataIndex: key,
-      editable: true,
-
-      width: "10rem",
-      title: (
-        <div style={{ display: "flex", gap: "1em" }}>
-          <InputComponent
-            key={key}
-            column={key}
-            setDataSource={setDataSource}
-          />
-          <Popover
-            trigger={"click"}
-            placement="rightTop"
-            content={
-              <div>
-                <FilterTabs dataIndex={key} setDataSource={setDataSource} />
-              </div>
+          const handleSortClick = async (key) => {
+            if (sortDirection == "asc") {
+              dispatch(setSortDirection("desc"));
+              dispatch(setSortField(key));
+            } else {
+              dispatch(setSortDirection("asc"));
+              dispatch(setSortField(key));
             }
-          >
-            <MenuUnfoldOutlined />
-          </Popover>
-        </div>
-      ),
-      children: [
-        {
-          title: key,
-          dataIndex: key,
-          editable: true,
-          width: "8rem",
-          onHeaderCell: () => {
-            return {
-              onClick: () => handleSortClick(key), // Call the handleSortClick function
-            };
-          },
+          };
+          if (leftPinnedColumns.includes(key)) {
+            fixedValue = "left";
+          } else if (rightPinnedColumns.includes(key)) {
+            fixedValue = "right";
+          } else {
+            fixedValue = "null";
+          }
+          return {
+            fixed: fixedValue,
+            dataIndex: key,
+            editable: true,
 
-          sorter: true,
-          sortDirections: ["descend", "ascend", "descend"],
-          defaultSortOrder: "ascend",
-          filterSearch: true,
-          fixed: fixedValue,
-        },
-      ],
-    };
-  });
+            width: "10rem",
+            title: (
+              <div style={{ display: "flex", gap: "1em" }}>
+                <InputComponent
+                  key={key}
+                  column={key}
+                  setDataSource={setDataSource}
+                />
+                <Popover
+                  trigger={"click"}
+                  placement="rightTop"
+                  content={
+                    <div>
+                      <FilterTabs
+                        dataIndex={key}
+                        setDataSource={setDataSource}
+                      />
+                    </div>
+                  }
+                >
+                  <MenuUnfoldOutlined />
+                </Popover>
+              </div>
+            ),
+            children: [
+              {
+                title: key,
+                dataIndex: key,
+                editable: true,
+                width: "8rem",
+                onHeaderCell: () => {
+                  return {
+                    onClick: () => handleSortClick(key), // Call the handleSortClick function
+                  };
+                },
+
+                sorter: true,
+                sortDirections: ["descend", "ascend", "descend"],
+                defaultSortOrder: "ascend",
+                filterSearch: true,
+                fixed: fixedValue,
+              },
+            ],
+          };
+        })
+      : [];
   const newcolumns = dynamicColumns.slice(1);
   newcolumns.unshift({
     title: "",
@@ -247,9 +310,7 @@ const Grid = () => {
   };
 
   const handlePageChange = (page) => {
-    setSelectedPage(page);
-    console.log(selectedPage);
-    console.log(sort);
+    dispatch(setSelectedPage(page));
   };
   return (
     <div>
@@ -282,9 +343,9 @@ const Grid = () => {
               tableLayout="fixed"
               pagination={{
                 defaultPageSize: 10,
-                total: totalPage * 10,
+                total: totalPages * 10,
                 onShowSizeChange: (current, pageSize) =>
-                  setSelectedLimit(pageSize),
+                  dispatch(setSelectedLimit(pageSize)),
                 showTotal: (total) => `Total ${total} items`,
                 showSizeChanger: true,
                 onChange: (page) => handlePageChange(page),

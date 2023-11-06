@@ -1,89 +1,101 @@
-// fileUploadSlice.js
-
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
-
-// Define the thunk for sending (uploading) the file
-// export const uploadFile = createAsyncThunk(
-//   "fileUpload/file_upload",
-
-// );
-
-// Define the thunk for receiving data
-// export const fetchData = createAsyncThunk(
-//   "fileUpload/file_fetch",
-// async ({ uniqueIdentifier, selected_page, selected_limit }) => {
-//   // Retrieve the uniqueIdentifier from the state
-//   if (uniqueIdentifier) {
-//     try {
-//       const getResponse = await axios.get(
-//         `http://192.168.2.194:3000/api/file_upload?unique_identifier=${uniqueIdentifier}&page=${selected_page}&limit=${selected_limit}`
-//       );
-//       console.log(getResponse);
-//       return getResponse;
-//     } catch (error) {
-//       throw error;
-//     }
-//   }
-// }
-// );
 
 const fileUploadSlice = createSlice({
   name: "fileUpload",
   initialState: {
+    loading: false,
+    dataSource: null,
     uniqueIdentifier: null,
     totalPages: null,
     selectedPage: 1,
     selectedLimit: 10,
-    receivedData: null,
+    sort: {
+      sortDirection: "",
+      sortField: "",
+      sortValue: "",
+    },
+    search: {
+      searchField: "",
+      searchValue: "",
+    },
+    filter: {
+      filterField: "",
+      filterValues: [],
+    },
   },
   reducers: {
     setUniqueIdentifier: (state, action) => {
       console.log(action.payload);
       state.uniqueIdentifier = action.payload;
     },
-    setLimit: (state, action) => {
+    setSelectedLimit: (state, action) => {
       state.selectedLimit = action.payload;
     },
-    setData: (state, action) => {
+    setDataSource: (state, action) => {
       console.log(action.payload);
-      const { data, totalPages } = action.payload.data;
-      state.receivedData = data;
-      state.loading = false;
-      state.totalPages = totalPages;
-      console.log("data", data);
-      console.log("totalPages", totalPages);
+      state.dataSource = action.payload;
     },
-    // You can define additional actions here if needed
+    setSelectedPage: (state, action) => {
+      state.selectedPage = action.payload;
+    },
+    setTotalPage: (state, action) => {
+      state.totalPages = action.payload;
+    },
+    setLoading: (state, action) => {
+      state.loading = action.payload;
+    },
+    setSortDirection: (state, action) => {
+      state.sort.sortDirection = action.payload;
+    },
+    setSortField: (state, action) => {
+      state.sort.sortField = action.payload;
+    },
+    setSortValue: (state, action) => {
+      state.sort.sortValue = action.payload;
+    },
+    setSearchField: (state, action) => {
+      state.search.searchField = action.payload;
+    },
+    setSearchValue: (state, action) => {
+      state.search.searchValue = action.payload;
+    },
+    setFilterField: (state, action) => {
+      state.filter.filterField = action.payload;
+    },
+    setFilterValue: (state, action) => {
+      state.filter.filterValues = action.payload;
+    },
   },
-  // // extraReducers: (builder) => {
-  // //   builder
-  // //     .addCase(fetchData.fulfilled, (state, action) => {
-  // //       console.log(action.payload);
-  // //       const { data, totalPages } = action.payload.data;
-  // //       state.receivedData = data;
-  // //       state.loading = false;
-  // //       state.totalPages = totalPages;
-  // //       console.log("data", data);
-  // //       console.log("totalPages", totalPages);
-  // //     })
-  // //     .addCase(fetchData.rejected, (state, action) => {
-  // //       // Handle the error if needed
-  // //     });
-  //   // .addCase(uploadFile.fulfilled, (state, action) => {
-  //   //   state.uniqueIdentifier = action.payload;
-  //   // })
-  //   // .addCase(uploadFile.rejected, (state, action) => {
-  //   //   // Handle the error if needed
-  //   // })
-  //   // .addCase(fetchData.pending, (state, action) => {
-  //   //   console.log(first);
-  //   //   state.loading = true;
-  //   // })
-  // },
 });
 
-export const { setLimit, setUniqueIdentifier, setPage, setData } =
-  fileUploadSlice.actions;
+export const {
+  setUniqueIdentifier,
+  setDataSource,
+  setSelectedLimit,
+  setSelectedPage,
+  setTotalPage,
+  setLoading,
+  setSortDirection,
+  setSortField,
+  setSortValue,
+  setSearchField,
+  setSearchValue,
+  setFilterField,
+  setFilterValue,
+} = fileUploadSlice.actions;
 
 export default fileUploadSlice.reducer;
+
+export const loading_state = (state) => state.fileUpload.loading;
+export const data_source = (state) => state.fileUpload.dataSource;
+export const unique_identifier = (state) => state.fileUpload.uniqueIdentifier;
+export const total_pages = (state) => state.fileUpload.totalPages;
+export const selected_page = (state) => state.fileUpload.selectedPage;
+export const selected_limit = (state) => state.fileUpload.selectedLimit;
+export const sort_direction = (state) => state.fileUpload.sort.sortDirection;
+export const sort_field = (state) => state.fileUpload.sort.sortField;
+export const sort_value = (state) => state.fileUpload.sort.sortValue;
+export const search_field = (state) => state.fileUpload.search.searchField;
+export const search_value = (state) => state.fileUpload.search.searchValue;
+export const filter_field = (state) => state.fileUpload.filter.filterField;
+export const filter_values = (state) => state.fileUpload.filter.filterValues;

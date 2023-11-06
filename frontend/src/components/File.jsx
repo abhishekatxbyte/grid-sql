@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
-import { setUniqueIdentifier } from "../store/fileUploadSlice";
+import { setDataSource, setUniqueIdentifier } from "../store/fileUploadSlice";
 import React, { useState } from "react";
 
 function File() {
@@ -16,13 +16,55 @@ function File() {
   };
 
   const dispatch = useDispatch();
+  // const handleUpload = async (file) => {
+  //   console.log(file);
+  //   if (!selectedFile) {
+  //     alert("Please select a file to upload.");
+  //     return;
+  //   }
+  //   try {
+  //     const formData = new FormData();
+  //     formData.append("file", selectedFile);
+
+  //     try {
+  //       const uploadResponse = await axios.post(
+  //         "http://192.168.2.194:3000/api/file_upload/",
+  //         formData
+  //       );
+  //       dispatch(setUniqueIdentifier(uploadResponse.data.pythonOutput));
+  //       return uploadResponse.data.pythonOutput;
+  //     } catch (error) {
+  //       throw error;
+  //     }
+  //   } catch (error) {
+  //     console.error("File upload failed:", error);
+  //   }
+  // };
   const handleUpload = async (file) => {
     console.log(file);
     if (!selectedFile) {
       alert("Please select a file to upload.");
       return;
     }
+
     try {
+      // Check if there is a previous unique identifier in local storage
+      const prevUniqueIdentifier = localStorage.getItem("uniqueIdentifier");
+
+      if (prevUniqueIdentifier) {
+        // Delete the previous file using the unique identifier
+        try {
+          await axios.delete(
+            `http://192.168.2.194:3000/api/file_upload?unique_identifier=${prevUniqueIdentifier}`
+          );
+          console.log(
+            `Deleted previous file with unique identifier: ${prevUniqueIdentifier}`
+          );
+        } catch (deleteError) {
+          console.error("Failed to delete previous file:", deleteError);
+        }
+      }
+
       const formData = new FormData();
       formData.append("file", selectedFile);
 
@@ -31,8 +73,13 @@ function File() {
           "http://192.168.2.194:3000/api/file_upload/",
           formData
         );
-        dispatch(setUniqueIdentifier(uploadResponse.data.pythonOutput));
-        return uploadResponse.data.pythonOutput;
+        const newUniqueIdentifier = uploadResponse.data.pythonOutput;
+        localStorage.setItem("uniqueIdentifier", newUniqueIdentifier);
+        dispatch(setUniqueIdentifier(newUniqueIdentifier + 1));
+        setTimeout(() => {
+          dispatch(setUniqueIdentifier(newUniqueIdentifier));
+        }, 10);
+        return newUniqueIdentifier;
       } catch (error) {
         throw error;
       }

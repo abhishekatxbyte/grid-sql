@@ -5,6 +5,24 @@ import { HolderOutlined } from "@ant-design/icons";
 import axios from "axios";
 const EditableContext = React.createContext(null);
 import { useSortable } from "@dnd-kit/sortable";
+import {
+  data_source,
+  filter_field,
+  filter_values,
+  loading_state,
+  search_field,
+  search_value,
+  selected_limit,
+  selected_page,
+  setDataSource,
+  setLoading,
+  setTotalPage,
+  sort_direction,
+  sort_field,
+  total_pages,
+  unique_identifier,
+} from "../../../store/fileUploadSlice";
+import { useDispatch, useSelector } from "react-redux";
 export const Row = ({ children, ...props }) => {
   const {
     attributes,
@@ -78,79 +96,6 @@ export const Row = ({ children, ...props }) => {
     </Form>
   );
 };
-// export const EditableCell = ({
-//     title,
-//     editable,
-//     children,
-//     dataIndex,
-//     record,
-//     handleSave,
-//     ...restProps
-// }) => {
-//     const [editing, setEditing] = useState(false);
-//     const inputRef = useRef(null);
-//     const form = useContext(EditableContext);
-
-//     useEffect(() => {
-//         if (editing) {
-//             inputRef.current.focus();
-//         }
-//     }, [editing]);
-
-//     const toggleEdit = () => {
-//         setEditing(!editing);
-//         form.setFieldsValue({
-//             [dataIndex]: record[dataIndex],
-//         });
-//     };
-
-//     const save = async () => {
-//         try {
-//             const values = await form.validateFields();
-//             toggleEdit();
-//             handleSave({
-//                 ...record,
-//                 ...values,
-//             });
-//         } catch (errInfo) {
-//             // console.log('Save failed:', errInfo);
-//         }
-//     };
-
-//     let childNode = children;
-
-//     if (editable) {
-//         childNode = editing ? (
-//             <Form.Item
-//                 style={{
-//                     margin: 0,
-//                 }}
-//                 name={dataIndex}
-//                 rules={[
-//                     {
-//                         required: true,
-//                         message: `${title} is required.`,
-//                     },
-//                 ]}
-//             >
-//                 <Input ref={inputRef} onPressEnter={save} onBlur={save} />
-//             </Form.Item>
-//         ) : (
-//             <div
-//                 className="editable-cell-value-wrap"
-//                 style={{
-//                     paddingRight: 24,
-//                     userSelect: 'none', // Add userSelect property to prevent text selection
-//                 }}
-//                 onClick={toggleEdit}
-//             >
-//                 {children}
-//             </div>
-//         );
-//     }
-
-//     return <td {...restProps}>{childNode}</td>;
-// };
 
 export const EditableCell = ({
   title,
@@ -161,10 +106,54 @@ export const EditableCell = ({
   handleSave,
   ...restProps
 }) => {
+  const uniqueIdentifier = useSelector(unique_identifier);
+  const selectedPage = useSelector(selected_page);
+  const selectedLimit = useSelector(selected_limit);
+  const sortDirection = useSelector(sort_direction);
+  const sortField = useSelector(sort_field);
+  const searchField = useSelector(search_field);
+  const searchValue = useSelector(search_value);
+  const filterField = useSelector(filter_field);
+  const filterValues = useSelector(filter_values);
+  const loading = useSelector(loading_state);
   const [editing, setEditing] = useState(false);
+
   const inputRef = useRef(null);
   const form = useContext(EditableContext);
   const [localRecord, setLocalRecord] = useState({ ...record }); // Use local state to track the record
+  const dispatch = useDispatch();
+  const fetchData = async () => {
+    dispatch(setLoading(true));
+    try {
+      const params = {
+        unique_identifier: uniqueIdentifier,
+        page: selectedPage,
+        limit: selectedLimit,
+        sortField: sortField,
+        sort: sortDirection,
+        searchField: searchField,
+        searchValue: searchValue,
+        filterField: filterField,
+        filterValues: filterValues,
+      };
+
+      const queryString = Object.entries(params)
+        .filter(([key, value]) => value !== undefined)
+        .map(([key, value]) => `${key}=${value}`)
+        .join("&");
+
+      const url = `http://192.168.2.194:3000/api/file_upload?${queryString}`;
+
+      const getResponse = await axios.get(url);
+      console.log(getResponse.data);
+      dispatch(setDataSource(getResponse.data.data));
+      dispatch(setTotalPage(getResponse.data.totalPages));
+      dispatch(setLoading(false));
+      return getResponse;
+    } catch (error) {
+      throw error;
+    }
+  };
 
   useEffect(() => {
     if (editing) {
@@ -189,6 +178,13 @@ export const EditableCell = ({
           for (const key in jsonObject) {
             if (jsonObject.hasOwnProperty(key)) {
               const value = jsonObject[key];
+              const updatedObj = {
+                [key]: !isNaN(Number(value)) ? Number(value) : value,
+              };
+              setLocalRecord({
+                ...localRecord, // Use localRecord when calling handleSave
+                ...updatedObj,
+              });
               toggleEdit();
               return {
                 document_id: localRecord["_id"],
@@ -203,14 +199,16 @@ export const EditableCell = ({
       }
 
       const updateData = updatedObject(values);
-      setLocalRecord({
-        ...localRecord, // Use localRecord when calling handleSave
-        ...values,
-      });
+
       await axios.patch(
         "http://192.168.2.194:3000/api/file_update/",
         updateData
       );
+      setLocalRecord({
+        ...localRecord, // Use localRecord when calling handleSave
+        ...values,
+      });
+      fetchData();
 
       toggleEdit();
       handleSave({
