@@ -182,7 +182,7 @@ const Grid = () => {
     dataIndex: "sort",
     key: "sort",
     render: () => null,
-    width: "3%",
+    width: "35px",
     fixed: "left",
     ellipsis: true,
   });
