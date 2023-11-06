@@ -9,11 +9,14 @@ import React, { useEffect, useState } from "react";
 
 import { MenuUnfoldOutlined } from "@ant-design/icons";
 import { ConfigProvider, Input, Popover, Table, Tooltip } from "antd";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { EditableCell, Row } from "./components/columns";
 
 import FilterTabs from "./components/FilterTabs/FilterTabs";
 import axios from "axios";
+import { setData } from "../../store/fileUploadSlice";
+import { SET_DATA } from "../../store/slice";
+// import { fetchData, setPage } from "../../store/fileUploadSlice";
 function filterArrayByProperty(data, propertyName, inputValue) {
   if (!data || !Array.isArray(data)) {
     return [];
@@ -58,37 +61,67 @@ const InputComponent = ({ column, setDataSource }) => {
   );
 };
 
-const Grid = ({ data, keyOfTab }) => {
-  const [state, setstate] = useState([]);
-  const [loading, setloading] = useState(true);
-  useEffect(() => {
-    getData();
-  }, []);
-
-  const getData = async () => {
-    await axios
-      .get("https://jsonplaceholder.typicode.com/comments")
-      .then((res) => {
-        setloading(false);
-        setstate(
-          res.data.map((row) => ({
-            Name: row.name,
-            Email: row.email,
-            id: row.id,
-          }))
-        );
-      });
-  };
+const Grid = () => {
+  const unique_identifier = useSelector(
+    (state) => state.fileUpload.uniqueIdentifier
+  );
+  const data = useSelector((state) => state.fileUpload.receivedData);
+  const [totalPage, setTotalPage] = useState(10);
   const [dataSource, setDataSource] = useState(data);
+  const [loading, setLoading] = useState(false);
+  const [selectedPage, setSelectedPage] = useState(1);
+  const [selectedLimit, setSelectedLimit] = useState(10);
+  const [sort, setSort] = useState({
+    sortDirection: "desc",
+    sortField: null,
+  });
+  const dispatch = useDispatch();
+  const fetchData = async () => {
+    setLoading((prev) => !prev);
+    try {
+      const getResponse = await axios.get(
+        `http://192.168.2.194:3000/api/file_upload?unique_identifier=${unique_identifier}&page=${selectedPage}&limit=${selectedLimit}&sortField=${sort.sortField}&sort=${sort.sortDirection}`
+      );
+      setDataSource(getResponse.data.data);
+      dispatch(SET_DATA(getResponse.data.data));
+      setTotalPage(getResponse.data.totalPages);
+      setLoading(false);
+
+      return getResponse;
+    } catch (error) {
+      throw error;
+    }
+  };
+  useEffect(() => {
+    if (unique_identifier) {
+      fetchData();
+    }
+  }, [unique_identifier, selectedPage, selectedLimit, sort]);
+
   const leftPinnedColumns = useSelector(
     (state) => state.data.leftPinnedColumns
   );
   const rightPinnedColumns = useSelector(
     (state) => state.data.rightPinnedColumns
   );
-  const scroll = { x: "max-content", y: "100%" };
+  console.log(loading);
+  const scroll = { x: "fit-content", y: "600px" };
+
+  if (!dataSource) {
+    return <>nothing to show</>;
+  }
+
   const dynamicColumns = Object.keys(dataSource[0]).map((key) => {
     let fixedValue = null;
+
+    const handleSortClick = async (key) => {
+      if (sort.sortDirection == "asc") {
+        setSort({ sortDirection: "desc", sortField: key });
+      } else {
+        setSort({ sortDirection: "asc", sortField: key });
+      }
+    };
+    console.log(sort);
     if (leftPinnedColumns.includes(key)) {
       fixedValue = "left";
     } else if (rightPinnedColumns.includes(key)) {
@@ -100,14 +133,7 @@ const Grid = ({ data, keyOfTab }) => {
       fixed: fixedValue,
       dataIndex: key,
       editable: true,
-      ellipsis: {
-        showTitle: false,
-      },
-      render: (key) => (
-        <Tooltip placement="topLeft" title={key}>
-          {key}
-        </Tooltip>
-      ),
+
       width: "10rem",
       title: (
         <div style={{ display: "flex", gap: "1em" }}>
@@ -134,41 +160,24 @@ const Grid = ({ data, keyOfTab }) => {
           title: key,
           dataIndex: key,
           editable: true,
-          width: "5rem",
-          ellipsis: {
-            showTitle: false,
+          width: "8rem",
+          onHeaderCell: () => {
+            return {
+              onClick: () => handleSortClick(key), // Call the handleSortClick function
+            };
           },
-          render: (key) => (
-            <Tooltip placement="topLeft" title={key}>
-              {key}
-            </Tooltip>
-          ),
-          sorter: (a, b) => {
-            const valueA =
-              typeof a[key] === "number" ? a[key] : parseFloat(a[key]) || 0;
-            const valueB =
-              typeof b[key] === "number" ? b[key] : parseFloat(b[key]) || 0;
 
-            if (valueA < valueB) {
-              return -1;
-            }
-            if (valueA > valueB) {
-              return 1;
-            }
-
-            // If numeric comparison didn't determine the order, fall back to string comparison
-            return String(a[key]).localeCompare(String(b[key]));
-          },
-          sortDirections: ["ascend", "descend"],
-
+          sorter: true,
+          sortDirections: ["descend", "ascend", "descend"],
+          defaultSortOrder: "ascend",
           filterSearch: true,
-
           fixed: fixedValue,
         },
       ],
     };
   });
-  dynamicColumns.unshift({
+  const newcolumns = dynamicColumns.slice(1);
+  newcolumns.unshift({
     title: "",
     dataIndex: "sort",
     key: "sort",
@@ -178,9 +187,11 @@ const Grid = ({ data, keyOfTab }) => {
     ellipsis: true,
   });
 
-  dynamicColumns.pop();
+  newcolumns.pop();
+  newcolumns.pop();
+  newcolumns.pop();
 
-  const sortedColumns = dynamicColumns.sort((a, b) => {
+  const sortedColumns = newcolumns.sort((a, b) => {
     if (a.fixed === "left") return -1;
     if (b.fixed === "left") return 1;
     if (a.fixed === "right") return 1; // Move right-pinned columns to the end
@@ -234,6 +245,12 @@ const Grid = ({ data, keyOfTab }) => {
       });
     }
   };
+
+  const handlePageChange = (page) => {
+    setSelectedPage(page);
+    console.log(selectedPage);
+    console.log(sort);
+  };
   return (
     <div>
       <ConfigProvider
@@ -241,8 +258,6 @@ const Grid = ({ data, keyOfTab }) => {
           components: {
             Table: {
               rowHoverBg: " #e6f4ff",
-
-              /* here is your component tokens */
             },
           },
         }}
@@ -262,9 +277,18 @@ const Grid = ({ data, keyOfTab }) => {
               scroll={scroll}
               loading={loading}
               rowKey="key"
-              size="middle"
+              size="small"
               columns={columns}
               tableLayout="fixed"
+              pagination={{
+                defaultPageSize: 10,
+                total: totalPage * 10,
+                onShowSizeChange: (current, pageSize) =>
+                  setSelectedLimit(pageSize),
+                showTotal: (total) => `Total ${total} items`,
+                showSizeChanger: true,
+                onChange: (page) => handlePageChange(page),
+              }}
               dataSource={dataSource}
               bordered={true}
             />

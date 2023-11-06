@@ -54,6 +54,7 @@ import fileUpload from "express-fileupload"; // Import express-fileupload module
 import root from "./routes/root.js";
 import userRoutes from "./routes/userRoutes.js";
 import fileUploadRoutes from "./routes/fileUploadRoutes.js";
+import fileUpdateRoutes from "./routes/fileUpdateRoutes.js";
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 import connectDB from "./config/db.js";
 
@@ -81,6 +82,7 @@ app.use("/", express.static(path.join(__dirname, "public")));
 app.use("/", root);
 app.use("/api/users", userRoutes);
 app.use("/api/file_upload", fileUploadRoutes);
+app.use("/api/file_update", fileUpdateRoutes);
 
 app.all("*", (req, res) => {
   res.status(404);

@@ -1,28 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-// import axios from "axios";
 
-// export const uploadCsvFile = createAsyncThunk(
-//   "data/uploadCsvFile",
-//   async (file) => {
-//     // Create a FormData object to send the file
-//     const formData = new FormData();
-//     formData.append("csvFile", file);
-//     console.log(formData);
-//     try {
-//       // Make a POST request to the API endpoint
-//       const response = await axios.post(
-//         "http://localhost:3000/api/csv/csvupload",
-//         formData
-//       );
-
-//       // Return the response data
-//       return response.data;
-//     } catch (error) {
-//       // Handle the error here
-//       throw error;
-//     }
-//   }
-// );
 const initialState = {
   data: [],
   dataArray: [],

@@ -4,11 +4,13 @@ import path from "path";
 import fs from "fs";
 import rimraf from "rimraf"; // Import the rimraf library
 import connectDB from "../config/db.js";
-
+import mongodb from "mongodb";
+const ObjectId = mongodb.ObjectId;
 const uploadFile = asyncHandler(async (req, res) => {
   if (!req.files || !req.files.file) {
     return res.status(400).json({ error: "No file uploaded" });
   }
+
   const uploadedFile = req.files.file;
   const fileName = uploadedFile.name;
 
@@ -75,63 +77,82 @@ const uploadFile = asyncHandler(async (req, res) => {
     }
   });
 });
-//using params
-// async function getData(req, res) {
-//   let client; // Define the client variable
-
-//   try {
-//     // Extract the query parameter from the request
-//     const uniqueIdentifier = req.query.unique_identifier;
-
-//     // Establish a connection to the MongoDB database using connectDB
-//     const dbConnection = await connectDB();
-//     client = dbConnection.connection.client; // Assign the client
-
-//     const db = client.db("grid"); // Access the database name
-//     const collection = db.collection("gridData");
-
-//     // Construct the query to find documents with the specified unique_identifier
-//     const query = { unique_identifier: uniqueIdentifier };
-
-//     // Fetch all documents that match the query
-//     const result = await collection.find(query).toArray();
-
-//     // No need to close the client here
-
-//     res.json(result);
-//   } catch (error) {
-//     console.log("Error: " + error);
-//     res.status(500).json({ error: "Database error" });
-//   }
-// }
 
 async function getData(req, res) {
-  let client; // Define the client variable
+  let client;
 
   try {
-    // Extract the query parameter from the request
     const uniqueIdentifier = req.query.unique_identifier;
-
-    // Establish a connection to the MongoDB database using connectDB
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+    const sortDirection =
+      req.query.sort === "asc" ? 1 : req.query.sort === "desc" ? -1 : 1; // Default to ascending order if not provided
+    const sortField = req.query.sortField || "_id"; // Default to sorting by "_id" if not provided
+    console.log(sortField);
     const dbConnection = await connectDB();
-    client = dbConnection.connection.client; // Assign the client
+    client = dbConnection.connection.client;
 
-    const db = client.db("grid"); // Access the database name
+    const db = client.db("grid");
     const collection = db.collection("gridData");
 
-    // Construct the query to find documents with the specified unique_identifier
     const query = { unique_identifier: uniqueIdentifier };
 
-    // Fetch all documents that match the query
-    const result = await collection.find(query).toArray();
+    const result = await collection
+      .find(query)
+      .sort({ [sortField]: sortDirection }) // Sort by the specified field and direction
+      .skip(skip)
+      .limit(limit)
+      .toArray();
 
-    // No need to close the client here
+    const totalDocuments = await collection.countDocuments(query);
+    const totalPages = Math.ceil(totalDocuments / limit);
 
-    res.json(result);
+    res.json({ data: result, totalPages });
   } catch (error) {
     console.log("Error: " + error);
     res.status(500).json({ error: "Database error" });
   }
 }
+async function updateData(req, res) {
+  let client;
+  try {
+    const dbConnection = await connectDB();
+    client = dbConnection.connection.client;
+    const db = client.db("grid");
+    const collection = db.collection("gridData");
+    const document_id = new ObjectId(req.body.document_id);
+    const update_field = req.body.update_field;
+    const update_value = req.body.update_value;
 
-export { getData, uploadFile };
+    console.log("Document ID:", document_id);
+    console.log("Update Field:", update_field);
+    console.log("Update Value:", update_value);
+
+    const query = { _id: document_id };
+    const update = {
+      $set: {
+        [update_field]: update_value,
+      },
+    };
+
+    console.log("Query:", query);
+    console.log("Update:", update);
+
+    const result = await collection.updateOne(query, update);
+    console.log("Update Result:", result);
+
+    if (result.matchedCount === 1 && result.modifiedCount === 1) {
+      res.json({ message: "Field updated successfully" });
+    } else {
+      res
+        .status(404)
+        .json({ error: "Document not found or field not updated" });
+    }
+  } catch (error) {
+    console.log("Error: " + error.message);
+    res.status(500).json({ error: "Database error", message: error.message });
+  }
+}
+
+export { getData, uploadFile, updateData };

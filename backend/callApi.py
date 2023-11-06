@@ -1,6 +1,6 @@
 import requests
 
-url = "http://localhost:8000/api/file_upload/file_upload"
+url = "http://localhost:8000/api/file_upload/"
 
 payload = {}
 files=[

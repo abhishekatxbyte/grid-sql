@@ -8,7 +8,7 @@ import {
 import React, { useState } from "react";
 
 import { MenuUnfoldOutlined } from "@ant-design/icons";
-import { ConfigProvider, Input, Popover, Table, Tooltip } from "antd";
+import { ConfigProvider, Empty, Input, Popover, Table, Tooltip } from "antd";
 import { useSelector } from "react-redux";
 import { EditableCell, Row } from "./components/columns";
 
@@ -35,7 +35,6 @@ function filterArrayByProperty(data, propertyName, inputValue) {
 const InputComponent = ({ column, setDataSource }) => {
   const data = useSelector((state) => state.data.data);
   const [inputValue, setInputValue] = useState("");
-
   const handleInputChange = (e) => {
     const inputValue = e.target.value;
     setInputValue(inputValue);

@@ -5,6 +5,5 @@ const router = express.Router();
 
 router.route("/").post(uploadFile);
 router.get("/", getData);
-// .get(protect, updateUserProfile);
 
 export default router;
